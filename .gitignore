@@ -1,0 +1,6 @@
+# Root-level secrets and OS noise (per-folder ignores also apply under backend/ and frontend/)
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log
