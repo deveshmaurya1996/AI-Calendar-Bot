@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import uvicorn
-from app.config import get_settings
+from app.config import get_settings, cors_allow_origins
 from app.env_validation import validate_settings
 from app.logger import setup_logger
 from app.api.routes import router
@@ -27,7 +27,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=cors_allow_origins(settings),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

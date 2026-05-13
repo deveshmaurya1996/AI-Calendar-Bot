@@ -22,7 +22,14 @@ class Settings(BaseSettings):
     GOOGLE_CALENDAR_ADMIN_EMAILS: str = ""
     FRONTEND_PUBLIC_URL: str = "http://localhost:3000"
     GOOGLE_APPOINTMENT_SCHEDULE_URL: str = ""
-    
+    CORS_ALLOW_ORIGINS: str = Field(
+        default="",
+        description=(
+            "Comma-separated extra browser origins for CORS. "
+            "Localhost :3000 and :3001 and FRONTEND_PUBLIC_URL are always included."
+        ),
+    )
+
     SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -46,3 +53,18 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings():
     return Settings()
+
+
+def cors_allow_origins(settings: Settings) -> list[str]:
+    origins: set[str] = {
+        "http://localhost:3000",
+        "http://localhost:3001",
+    }
+    pub = (settings.FRONTEND_PUBLIC_URL or "").strip().rstrip("/")
+    if pub:
+        origins.add(pub)
+    for part in (settings.CORS_ALLOW_ORIGINS or "").split(","):
+        p = part.strip().rstrip("/")
+        if p:
+            origins.add(p)
+    return sorted(origins)

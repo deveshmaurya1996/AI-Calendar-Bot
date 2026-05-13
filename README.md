@@ -65,6 +65,17 @@ Next.js (localhost:3000)          FastAPI (localhost:8000)
 
 ---
 
+## Dependencies (versions pinned in manifests)
+
+Install commands pull concrete versions from the repo manifests:
+
+| Area | File |
+|------|------|
+| Python runtime deps | [`backend/requirements.txt`](backend/requirements.txt) — FastAPI, Uvicorn, Pydantic, Google API clients, OpenAI-compatible client for Pollinations, PyJWT, pytest, etc. |
+| Frontend deps | [`frontend/package.json`](frontend/package.json) — Next.js, React, TanStack Query, Zustand, Axios |
+
+---
+
 ## Google Cloud & environment
 
 1. Create an OAuth **Web application** client; set **Authorized redirect URI** exactly to  
@@ -75,6 +86,7 @@ Next.js (localhost:3000)          FastAPI (localhost:8000)
 5. **`GOOGLE_CALENDAR_ID`:** `primary` or a specific calendar ID.
 6. **`GOOGLE_CALENDAR_ADMIN_EMAILS`:** Comma-separated list of Google **account emails** allowed to run **Connect calendar** and to **persist** the server refresh token. The signed-in user’s email (from Google sign-in) must match one entry (case-insensitive). If empty, server calendar linking from the UI is disabled.
 7. **`SECRET_KEY`:** Random string used for OAuth `state` JWTs and optional app session cookies.
+8. **CORS (deployments):** The API allows `http://localhost:3000`, `http://localhost:3001`, **`FRONTEND_PUBLIC_URL`** (normalized), and any origins listed in **`CORS_ALLOW_ORIGINS`** (comma-separated). Example: `CORS_ALLOW_ORIGINS=https://my-app.vercel.app`.
 
 **OAuth note:** PKCE is stored in an HttpOnly cookie **and** duplicated in a short-lived **server-side map** keyed by `state`, so token exchange still works when the browser drops the cookie on cross-origin `localhost:3000` → `localhost:8000` flows.
 
@@ -233,7 +245,7 @@ Manual API testing may send `Authorization: Bearer <google_access_token>` and `g
 | Calendar | One `GOOGLE_CALENDAR_ID` per deployment; not multi-tenant. |
 | Booking | Optional `GOOGLE_APPOINTMENT_SCHEDULE_URL` opens Google’s scheduling page from the UI; chat/dialog can still create events via the Calendar API and return an `event_link` (see `POST /api/chat` response). |
 | NLP | Single intent JSON pass + one reply model call; not a multi-agent planner. |
-| CORS | `main.py` allows `localhost:3000` / `3001`; add your deployed frontend origin before hosting publicly. |
+| CORS | Defaults include `localhost:3000` / `3001`, **`FRONTEND_PUBLIC_URL`**, and **`CORS_ALLOW_ORIGINS`** (comma-separated). Misconfigured origins cause silent browser blocking — confirm both env vars match your deployed frontend. |
 
 ---
 
